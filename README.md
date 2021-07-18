@@ -17,7 +17,7 @@ samples, guidance on mobile development, and a full API reference. -->
 
 本项目由adobe xd直接导出，共有8个界面，调用各界面请直接在lib/main.dart中的MyApp类中的build函数中home:后改为要调用的界面，并导入相应的包
 
-如调用XDGooglePixel51.dart须在开头导入```import './XDGooglePixel51.dart';```并将main.dart的25行改为```home: XDGooglePixel51(),```
+如调用XDGooglePixel51.dart须在lib/main.dart文件开头导入```import './XDGooglePixel51.dart';```并将main.dart的25行改为```home: XDGooglePixel51(),```
 
 已知bug：
 
