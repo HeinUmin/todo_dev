@@ -19,6 +19,7 @@ samples, guidance on mobile development, and a full API reference. -->
 如调用XDGooglePixel51.dart须在开头导入```import './XDGooglePixel51.dart';```并将main.dart的25行改为```home: XDGooglePixel51(),```
 
 已知bug：
+
 1.动画无法导出
 
 2.下方切换到下一个页面的按钮显示有问题并无法点击
