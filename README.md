@@ -20,6 +20,9 @@ samples, guidance on mobile development, and a full API reference. -->
 
 已知bug：
 1.动画无法导出
+
 2.下方切换到下一个页面的按钮显示有问题并无法点击
+
 3.文本框无法点击
+
 4.字体与原始设计不同（因为我电脑里没有设计时用的字体😭😭😭）
