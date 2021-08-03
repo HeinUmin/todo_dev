@@ -9,11 +9,11 @@ import 'login_warning.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'login_end.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../res/data.dart';
 
 bool selected = false;
 TextEditingController id = TextEditingController();
 TextEditingController password = TextEditingController();
-Map login = {"admin": "password"};
 
 class LoginMain extends StatelessWidget {
   LoginMain({
