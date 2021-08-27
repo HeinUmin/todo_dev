@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'login/login_start.dart';
+import 'package:flutter/rendering.dart';
+// import 'login/login_start.dart';
 import 'task/task_main.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
+  debugPaintSizeEnabled = false;
   runApp(MyApp());
 }
 
@@ -12,6 +15,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('zh', 'CH'),
+        const Locale('en', 'US'),
+      ],
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.

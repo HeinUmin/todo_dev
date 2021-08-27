@@ -4,7 +4,7 @@ import 'login_main.dart';
 import 'package:adobe_xd/page_link.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../res/next_button.dart';
-import '../task/task_main.dart';
+import '../task/task_main_old.dart';
 
 class LoginEnd extends StatelessWidget {
   LoginEnd({
