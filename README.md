@@ -15,16 +15,12 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference. -->
 
-本项目由adobe xd直接导出，共有8个界面，调用各界面请直接在lib/main.dart中的MyApp类中的build函数中home:后改为要调用的界面，并导入相应的包
+task组件已基本完成，后续可能的更新：
 
-如调用XDGooglePixel51.dart须在lib/main.dart文件开头导入```import './XDGooglePixel51.dart';```并将main.dart的25行改为```home: XDGooglePixel51(),```
+1.重新调整调用逻辑，简化菜单层级
 
-已知bug：
+2.修改group名称
 
-1.动画无法导出
+3.其他修复
 
-2.下方切换到下一个页面的按钮显示有问题并无法点击
-
-3.文本框无法点击
-
-4.字体与原始设计不同（因为我电脑里没有设计时用的字体😭😭😭）
+login组件存在较大问题，需要更新。
