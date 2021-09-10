@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:todo_dev/task/task_detail.dart';
 // import 'package:path_provider/path_provider.dart';
 import 'task_new.dart';
 import 'task_edit.dart';
@@ -22,9 +23,10 @@ class TaskMainContainer extends StatefulWidget {
 }
 
 class _TaskMainContainerState extends State<TaskMainContainer> {
-  List<List<bool>> show = taskData
-      .map((e) => e.task.map((element) => !element.complete).toList())
-      .toList();
+  callback() {
+    setState(() {});
+  }
+
   String mainTitle() {
     if (DateTime.now().hour < 5)
       return '夜深了!';
@@ -42,6 +44,10 @@ class _TaskMainContainerState extends State<TaskMainContainer> {
 
   @override
   Widget build(BuildContext context) {
+    for (int i = 0; i < taskData.length; i++) {
+      var temp = taskData[i].task;
+      for (int j = 0; j < temp.length; j++) temp[j].selected = temp[j].complete;
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text('Hi, ' + mainTitle(),
@@ -86,12 +92,13 @@ class _TaskMainContainerState extends State<TaskMainContainer> {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) => TaskEdit()))
                     .then((value) {
-                  setState(() {
-                    show = taskData
-                        .map((e) =>
-                            e.task.map((element) => !element.complete).toList())
-                        .toList();
-                  });
+                  setState(() {});
+                  // setState(() {
+                  //   show = taskData
+                  //       .map((e) =>
+                  //           e.task.map((element) => !element.complete).toList())
+                  //       .toList();
+                  // });
                 });
               if (value == 'show')
                 setState(() {
@@ -103,12 +110,13 @@ class _TaskMainContainerState extends State<TaskMainContainer> {
                     builder: (context) {
                       return NewGruop();
                     }).then((value) {
-                  setState(() {
-                    show = taskData
-                        .map((e) =>
-                            e.task.map((element) => !element.complete).toList())
-                        .toList();
-                  });
+                  setState(() {});
+                  // setState(() {
+                  //   show = taskData
+                  //       .map((e) =>
+                  //           e.task.map((element) => !element.complete).toList())
+                  //       .toList();
+                  // });
                 });
             },
           ),
@@ -120,11 +128,8 @@ class _TaskMainContainerState extends State<TaskMainContainer> {
           // shrinkWrap: true,
           itemCount: taskData.length,
           itemBuilder: (context, index) {
-            return MainCardContainer(
-              data: taskData[index],
-              last: index == taskData.length - 1,
-              showGruop: show[index],
-            );
+            return MainCardContainer(callback,
+                data: taskData[index], group: index);
           },
         ),
       ),
@@ -132,11 +137,12 @@ class _TaskMainContainerState extends State<TaskMainContainer> {
         onPressed: () async {
           await Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => TaskNew()));
-          setState(() {
-            show = taskData
-                .map((e) => e.task.map((element) => !element.complete).toList())
-                .toList();
-          });
+          setState(() {});
+          // setState(() {
+          //   show = taskData
+          //       .map((e) => e.task.map((element) => !element.complete).toList())
+          //       .toList();
+          // });
         },
         child: Icon(Icons.add),
         tooltip: '添加待办',
@@ -147,13 +153,10 @@ class _TaskMainContainerState extends State<TaskMainContainer> {
 
 class MainCardContainer extends StatefulWidget {
   final GroupViewModel data;
-  final showGruop;
-  final bool last;
-  MainCardContainer(
-      {Key? key,
-      required this.data,
-      required this.last,
-      required this.showGruop})
+  final int group;
+  final Function callback;
+  MainCardContainer(this.callback,
+      {Key? key, required this.data, required this.group})
       : super(key: key);
   @override
   _MainCardContainer createState() => _MainCardContainer();
@@ -204,7 +207,7 @@ class _MainCardContainer extends State<MainCardContainer> {
         itemBuilder: (context, index) {
           final item = task[index];
           return Visibility(
-              visible: (widget.showGruop[index] || showComplete) ? true : false,
+              visible: (!item.selected! || showComplete) ? true : false,
               child: Dismissible(
                   confirmDismiss: (direction) async {
                     if (direction == DismissDirection.startToEnd) {
@@ -231,7 +234,7 @@ class _MainCardContainer extends State<MainCardContainer> {
                       ScaffoldMessenger.of(context).hideCurrentSnackBar();
                       if (showComplete) {
                         item.complete = !item.complete;
-                        widget.showGruop[index] = !item.complete;
+                        item.selected = item.complete;
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text(
                               "${item.name} ${item.complete ? '已完成' : '未完成'}"),
@@ -241,7 +244,7 @@ class _MainCardContainer extends State<MainCardContainer> {
                         return false;
                       }
                       item.complete = true;
-                      widget.showGruop[index] = false;
+                      item.selected = true;
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text("${item.name} 已完成"),
                         action: SnackBarAction(
@@ -249,7 +252,7 @@ class _MainCardContainer extends State<MainCardContainer> {
                             onPressed: () {
                               setState(() {
                                 item.complete = false;
-                                widget.showGruop[index] = true;
+                                item.selected = false;
                               });
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
@@ -287,9 +290,12 @@ class _MainCardContainer extends State<MainCardContainer> {
                   ),
                   child: ListTile(
                     onTap: () async {
-                      await Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => TaskNew()));
-                      setState(() {});
+                      await Navigator.of(context)
+                          .push(MaterialPageRoute(
+                              builder: (context) => TaskDetail(
+                                  group: widget.group, index: index)))
+                          .then((value) => null);
+                      widget.callback();
                     },
                     leading: Checkbox(
                         value: item.complete,
@@ -298,7 +304,7 @@ class _MainCardContainer extends State<MainCardContainer> {
                             item.complete = value!;
                           });
                           if (showComplete || !item.complete) {
-                            widget.showGruop[index] = !item.complete;
+                            item.selected = item.complete;
                             return;
                           }
                           ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -309,7 +315,7 @@ class _MainCardContainer extends State<MainCardContainer> {
                                 onPressed: () {
                                   setState(() {
                                     item.complete = false;
-                                    widget.showGruop[index] = true;
+                                    item.selected = false;
                                   });
                                   ScaffoldMessenger.of(context)
                                       .showSnackBar(SnackBar(
@@ -321,7 +327,7 @@ class _MainCardContainer extends State<MainCardContainer> {
                           Timer(
                               Duration(seconds: 3),
                               () => setState(() {
-                                    widget.showGruop[index] = !item.complete;
+                                    item.selected = item.complete;
                                   }));
                         }),
                     title: Text(
@@ -346,7 +352,7 @@ class _MainCardContainer extends State<MainCardContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: widget.last
+        margin: widget.group == taskData.length - 1
             ? EdgeInsets.fromLTRB(16, 16, 16, 80)
             : EdgeInsets.fromLTRB(16, 16, 16, 0),
         decoration: BoxDecoration(

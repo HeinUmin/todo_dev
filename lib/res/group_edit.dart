@@ -127,31 +127,124 @@ class _NewGruopState extends State<NewGruop> {
   }
 }
 
-// class GroupEdit extends StatefulWidget {
-//   const GroupEdit({Key? key}) : super(key: key);
+class GroupEdit extends StatefulWidget {
+  const GroupEdit({Key? key}) : super(key: key);
 
-//   @override
-//   _GroupEditState createState() => _GroupEditState();
-// }
+  @override
+  _GroupEditState createState() => _GroupEditState();
+}
 
-// class _GroupEditState extends State<GroupEdit> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return AlertDialog(
-//       scrollable: true,
-//       title: Text('编辑分组'),
-//       content: ReorderableListView.builder(
-//         physics: NeverScrollableScrollPhysics(),
-//         shrinkWrap: true,
-//           itemBuilder: (context, index) {
-//             var group = taskData[index];
-//             return ListTile(
-//               key: Key(group.key.toString()),
-//               leading: Checkbox(onChanged: ,),
-//             );
-//           },
-//           itemCount: itemCount,
-//           onReorder: onReorder),
-//     );
-//   }
-// }
+class _GroupEditState extends State<GroupEdit> {
+  List<GroupViewModel> groups = [];
+  List<GroupViewModel> copyList(List<GroupViewModel> list) {
+    List<GroupViewModel> newList = [];
+    list.forEach((element) {
+      newList.add(GroupViewModel(
+          name: element.name,
+          task: element.task.map((e) {
+            e.selected = false;
+            return e;
+          }).toList(),
+          // .map((e) => TaskViewModel(
+          //     name: e.name,
+          //     time: e.time,
+          //     key: e.key,
+          //     description: e.description,
+          //     weight: e.weight,
+          //     repeat: e.repeat,
+          //     complete: e.complete,
+          //     show: e.show))
+          // .toList(),
+          color: element.color,
+          key: element.key,
+          fold: element.fold));
+    });
+    return newList;
+  }
+
+  @override
+  void initState() {
+    groups = copyList(taskData);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      // scrollable: true,
+      title: Text('编辑分组'),
+      content: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 48.0 * groups.length > MediaQuery.of(context).size.height * 0.9
+            ? MediaQuery.of(context).size.height * 0.9
+            : 48.0 * groups.length,
+        child: ReorderableListView.builder(
+            // buildDefaultDragHandles: false,
+            // physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              var group = groups[index];
+              return Dismissible(
+                  background: Container(
+                    color: Colors.red,
+                    child: ListTile(
+                      leading: Text(
+                        '删除',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      dense: true,
+                    ),
+                  ),
+                  secondaryBackground: Container(
+                    color: Colors.red,
+                    child: ListTile(
+                      trailing: Text(
+                        '删除',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      dense: true,
+                    ),
+                  ),
+                  onDismissed: (direction) {
+                    setState(() {
+                      groups.removeAt(index);
+                    });
+                  },
+                  key: Key(group.key.toString()),
+                  child: ListTile(
+                    leading: Icon(Icons.circle, color: group.color),
+                    trailing: Icon(Icons.dehaze),
+                    title: Text(group.name, overflow: TextOverflow.ellipsis),
+                    dense: true,
+                  ));
+            },
+            itemCount: groups.length,
+            onReorder: (oldIndex, newIndex) {
+              setState(() {
+                var temp = groups[oldIndex];
+                if (oldIndex > newIndex) {
+                  groups.removeAt(oldIndex);
+                  groups.insert(newIndex, temp);
+                  return;
+                }
+                if (oldIndex < newIndex) {
+                  groups.removeAt(oldIndex);
+                  groups.insert(newIndex - 1, temp);
+                  return;
+                }
+              });
+            }),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(), child: Text('取消')),
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              taskData = copyList(groups);
+              Navigator.of(context).pop();
+            },
+            child: Text('确定')),
+      ],
+    );
+  }
+}

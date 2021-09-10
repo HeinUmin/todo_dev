@@ -1,45 +1,107 @@
 import 'package:flutter/material.dart';
 import '../res/data.dart';
 
-class TaskNew extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return TaskInput();
-  }
-}
-
-class TaskInput extends StatefulWidget {
-  const TaskInput({Key? key}) : super(key: key);
+class TaskDetail extends StatefulWidget {
+  final int group;
+  final int index;
+  const TaskDetail({required this.group, required this.index, Key? key})
+      : super(key: key);
 
   @override
-  _TaskInputState createState() => _TaskInputState();
+  _TaskDetailState createState() => _TaskDetailState();
 }
 
-class _TaskInputState extends State<TaskInput> {
+class _TaskDetailState extends State<TaskDetail> {
   TextEditingController name = TextEditingController();
   TextEditingController description = TextEditingController();
   TextEditingController dateTemp = TextEditingController();
   TextEditingController time = TextEditingController();
   TextEditingController repetition = TextEditingController();
   TextEditingController alarm = TextEditingController();
-  DateTime date = DateTime(2099, 12, 31, 23, 59, 59);
+  DateTime date = DateTime.now();
   FocusNode descriptionNode = FocusNode();
   List<DropdownMenuItem<int>> dropDownMenuItem = [];
   int priority = 1;
   int group = 0;
-  String priorityLabel = '默认优先级';
-  String groupLabel = '默认分组';
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    super.initState();
     taskData.forEach((element) {
       dropDownMenuItem.add(DropdownMenuItem(
         child: Text(element.name),
         value: element.key,
       ));
     });
+    TaskViewModel data = taskData[widget.group].task[widget.index];
+    name.text = data.name;
+    if (data.description != null) description.text = data.description!;
+    date = data.time;
+    dateTemp.text = date.toString().substring(0, 10);
+    priority = data.weight;
+    group = widget.group;
+    repetition.text = repeatString(data.repeat);
+    alarm.text = alarmString(data.alarm);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    time.text = TimeOfDay.fromDateTime(date).format(context);
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.blue,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          tooltip: '返回',
+        ),
+        title: Text('编辑事项',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w700,
+            )),
+        foregroundColor: Colors.blue,
+        backgroundColor: Colors.white,
+      ),
+      body: SingleChildScrollView(child: this.input()),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (_formKey.currentState!.validate()) {
+            var toChange = taskData[group].task;
+            for (int i = 0; i < toChange.length; i++) {
+              toChange[i].key = i;
+            }
+            if (group == widget.group)
+              toChange[widget.index] = TaskViewModel(
+                  name: name.text,
+                  time: date,
+                  key: widget.index,
+                  description: description.text,
+                  weight: priority,
+                  repeat: stringRepeat(repetition.text),
+                  alarm: stringAlarm(alarm.text));
+            else {
+              toChange.add(TaskViewModel(
+                  name: name.text,
+                  time: date,
+                  key: toChange.length,
+                  description: description.text,
+                  weight: priority,
+                  repeat: stringRepeat(repetition.text),
+                  alarm: stringAlarm(alarm.text)));
+              taskData[widget.group].task.removeAt(widget.index);
+            }
+            Navigator.of(context).pop();
+          }
+        },
+        child: Icon(Icons.done),
+      ),
+    );
   }
 
   Widget input() {
@@ -140,9 +202,10 @@ class _TaskInputState extends State<TaskInput> {
                     Expanded(
                       child: DropdownButtonFormField(
                           isExpanded: true,
+                          value: priority,
                           decoration: InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: priorityLabel,
+                              labelText: '优先级',
                               suffixIcon: Icon(Icons.priority_high)),
                           icon: Icon(null),
                           items: [
@@ -175,29 +238,24 @@ class _TaskInputState extends State<TaskInput> {
                           onChanged: (value) {
                             dynamic temp = value;
                             priority = temp;
-                            print(priority);
-                            setState(() {
-                              priorityLabel = '优先级';
-                            });
+                            // print(priority);
                           }),
                     ),
                     Padding(padding: EdgeInsets.only(left: 10)),
                     Expanded(
                       child: DropdownButtonFormField(
                           isExpanded: true,
+                          value: group,
                           decoration: InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: groupLabel,
+                              labelText: '分组',
                               suffixIcon: Icon(Icons.folder_open)),
                           icon: Icon(null),
                           items: dropDownMenuItem,
                           onChanged: (value) {
                             dynamic temp = value;
                             group = temp;
-                            print(group);
-                            setState(() {
-                              groupLabel = '分组';
-                            });
+                            // print(group);
                           }),
                     )
                   ],
@@ -279,8 +337,7 @@ class _TaskInputState extends State<TaskInput> {
                         },
                         decoration: InputDecoration(
                           suffixIcon: Icon(Icons.date_range),
-                          labelText:
-                              '${repetition.text.isEmpty ? '不重复' : '重复'}',
+                          labelText: '重复',
                           border: OutlineInputBorder(),
                         ),
                       )),
@@ -357,7 +414,7 @@ class _TaskInputState extends State<TaskInput> {
                         },
                         decoration: InputDecoration(
                           suffixIcon: Icon(Icons.alarm),
-                          labelText: '${alarm.text.isEmpty ? '不提醒' : '提醒'}',
+                          labelText: '提醒',
                           border: OutlineInputBorder(),
                         ),
                       ))
@@ -366,53 +423,6 @@ class _TaskInputState extends State<TaskInput> {
               Padding(padding: EdgeInsets.only(top: 80))
             ],
           )),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.blue,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          tooltip: '返回',
-        ),
-        title: Text('创建新事项',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w700,
-            )),
-        foregroundColor: Colors.blue,
-        backgroundColor: Colors.white,
-      ),
-      body: SingleChildScrollView(child: this.input()),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            var toChange = taskData[group].task;
-            for (int i = 0; i < toChange.length; i++) {
-              toChange[i].key = i;
-            }
-            toChange.add(TaskViewModel(
-                name: name.text,
-                time: date,
-                key: toChange.length,
-                description: description.text,
-                weight: priority,
-                repeat: stringRepeat(repetition.text),
-                alarm: stringAlarm(alarm.text)));
-
-            Navigator.of(context).pop();
-          }
-        },
-        child: Icon(Icons.done),
-      ),
     );
   }
 }

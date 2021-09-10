@@ -18,15 +18,16 @@ class TaskEditContainer extends StatefulWidget {
 }
 
 class _TaskEditContainerState extends State<TaskEditContainer> {
-  List<List<bool>> show =
-      taskData.map((e) => e.task.map((element) => false).toList()).toList();
   List<GroupViewModel> tasks = [];
   List<GroupViewModel> copyList(List<GroupViewModel> list) {
     List<GroupViewModel> newList = [];
     list.forEach((element) {
       newList.add(GroupViewModel(
           name: element.name,
-          task: element.task.map((e) => e).toList(),
+          task: element.task.map((e) {
+            e.selected = false;
+            return e;
+          }).toList(),
           // .map((e) => TaskViewModel(
           //     name: e.name,
           //     time: e.time,
@@ -77,9 +78,8 @@ class _TaskEditContainerState extends State<TaskEditContainer> {
               for (int i = 0; i < tasks.length; i++) {
                 var temp = tasks[i].task;
                 for (int j = 0; j < temp.length; j++)
-                  if (show[i][j]) {
+                  if (temp[j].selected!) {
                     temp.removeAt(j);
-                    show[i].removeAt(j);
                     j--;
                   }
               }
@@ -120,26 +120,35 @@ class _TaskEditContainerState extends State<TaskEditContainer> {
             ],
             tooltip: '菜单',
             onSelected: (String value) {
-              if (value == 'group') print('group');
+              if (value == 'group') {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return GroupEdit();
+                    }).then((value) {
+                  setState(() {});
+                });
+              }
               if (value == 'all') {
-                for (int i = 0; i < show.length; i++) {
-                  var temp = show[i];
-                  for (int j = 0; j < temp.length; j++) temp[j] = true;
+                for (int i = 0; i < tasks.length; i++) {
+                  var temp = tasks[i].task;
+                  for (int j = 0; j < temp.length; j++) temp[j].selected = true;
                 }
                 setState(() {});
               }
               if (value == 'complete') {
-                for (int i = 0; i < show.length; i++) {
+                for (int i = 0; i < tasks.length; i++) {
                   var temp = tasks[i].task;
                   for (int j = 0; j < temp.length; j++)
-                    show[i][j] = temp[j].complete;
+                    temp[j].selected = temp[j].complete;
                 }
                 setState(() {});
               }
               if (value == 'reverse') {
-                for (int i = 0; i < show.length; i++) {
-                  var temp = show[i];
-                  for (int j = 0; j < temp.length; j++) temp[j] = !temp[j];
+                for (int i = 0; i < tasks.length; i++) {
+                  var temp = tasks[i].task;
+                  for (int j = 0; j < temp.length; j++)
+                    temp[j].selected = !temp[j].selected!;
                 }
                 setState(() {});
               }
@@ -156,7 +165,6 @@ class _TaskEditContainerState extends State<TaskEditContainer> {
             return MainCardContainer(
               data: tasks[index],
               last: index == tasks.length - 1,
-              showGroup: show[index],
             );
           },
         ),
@@ -176,12 +184,7 @@ class _TaskEditContainerState extends State<TaskEditContainer> {
 class MainCardContainer extends StatefulWidget {
   final GroupViewModel data;
   final bool last;
-  final showGroup;
-  MainCardContainer(
-      {Key? key,
-      required this.data,
-      required this.last,
-      required this.showGroup})
+  MainCardContainer({Key? key, required this.data, required this.last})
       : super(key: key);
   @override
   _MainCardContainer createState() => _MainCardContainer();
@@ -235,12 +238,13 @@ class _MainCardContainer extends State<MainCardContainer> {
           return ListTile(
             key: Key(index.toString()),
             leading: Checkbox(
-                value: widget.showGroup[index],
+                value: task[index].selected,
                 onChanged: (value) {
                   setState(() {
-                    widget.showGroup[index] = value!;
+                    task[index].selected = value!;
                   });
                 }),
+            trailing: Icon(Icons.dehaze),
             title: Text(
               '${item.name}',
               overflow: TextOverflow.ellipsis,
@@ -333,19 +337,18 @@ class _MainCardContainer extends State<MainCardContainer> {
           //         child: ));
         },
         onReorder: (oldIndex, newIndex) {
-          setState(() {
-            var temp = task[oldIndex];
-            if (oldIndex > newIndex) {
-              task.removeAt(oldIndex);
-              task.insert(newIndex, temp);
-              return;
-            }
-            if (oldIndex < newIndex) {
-              task.removeAt(oldIndex);
-              task.insert(newIndex - 1, temp);
-              return;
-            }
-          });
+          var temp = task[oldIndex];
+          if (oldIndex > newIndex) {
+            task.removeAt(oldIndex);
+            task.insert(newIndex, temp);
+            return;
+          }
+          if (oldIndex < newIndex) {
+            task.removeAt(oldIndex);
+            task.insert(newIndex - 1, temp);
+            return;
+          }
+          // setState(() {});
         },
         itemCount: task.length);
   }
