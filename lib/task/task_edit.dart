@@ -241,6 +241,11 @@ class _MainCardContainer extends State<MainCardContainer> {
           final item = task[index];
           return ListTile(
             key: Key(index.toString()),
+            onTap: () {
+              setState(() {
+                task[index].selected = !task[index].selected!;
+              });
+            },
             leading: Checkbox(
                 value: task[index].selected,
                 onChanged: (value) {
