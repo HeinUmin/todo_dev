@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'material_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'data.dart';
 
-class NewGruop extends StatefulWidget {
-  const NewGruop({Key? key}) : super(key: key);
+class NewGroup extends StatefulWidget {
+  const NewGroup({Key? key}) : super(key: key);
 
   @override
-  _NewGruopState createState() => _NewGruopState();
+  _NewGroupState createState() => _NewGroupState();
 }
 
-class _NewGruopState extends State<NewGruop> {
+class _NewGroupState extends State<NewGroup> {
   TextEditingController newGruop = TextEditingController();
   Color currentColor = Color(0xff443a49);
 
@@ -127,6 +127,135 @@ class _NewGruopState extends State<NewGruop> {
   }
 }
 
+class GroupRename extends StatefulWidget {
+  final GroupViewModel group;
+  const GroupRename({required this.group, Key? key}) : super(key: key);
+
+  @override
+  _NewGruopState createState() => _NewGruopState();
+}
+
+class _NewGruopState extends State<GroupRename> {
+  TextEditingController gruopEdit = TextEditingController();
+  Color currentColor = Color(0xff443a49);
+
+  Widget colorPicker(Color pickerColor) {
+    return AlertDialog(
+      scrollable: true,
+      backgroundColor: Color(0xFFEFEFEF),
+      title: Text('选择颜色'),
+      content:
+          // SingleChildScrollView(
+          // child: ColorPicker(
+          //   pickerColor: pickerColor,
+          //   onColorChanged: (Color color) {
+          //     setState(() => pickerColor = color);
+          //   },
+          //   showLabel: true,
+          //   pickerAreaHeightPercent: 0.8,
+          // ),
+          // Use Material color picker:
+          //
+          // child:
+          MaterialPicker(
+        pickerColor: pickerColor,
+        onColorChanged: (Color color) {
+          setState(() => pickerColor = color);
+        },
+        enableLabel: true, // only on portrait mode
+      ),
+      //
+      // Use Block color picker:
+      //
+      // child: BlockPicker(
+      //   pickerColor: pickerColor,
+      //   onColorChanged: (Color color) {
+      //     setState(() => pickerColor = color);
+      //   },
+      // ),
+      //
+      // child: MultipleChoiceBlockPicker(
+      //   pickerColors: currentColors,
+      //   onColorsChanged: changeColors,
+      // ),
+      // ),
+      actions: <Widget>[
+        TextButton(
+          child: Text('取消'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: Text('确定'),
+          onPressed: () {
+            Navigator.of(context).pop(pickerColor);
+          },
+        ),
+      ],
+    );
+  }
+
+  @override
+  void initState() {
+    gruopEdit.text = widget.group.name;
+    currentColor = widget.group.color;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      scrollable: true,
+      title: Text('编辑分组'),
+      content: TextField(
+        autofocus: true,
+        controller: gruopEdit,
+        decoration: InputDecoration(
+            labelText: '分组名称',
+            border: OutlineInputBorder(),
+            suffixIcon: IconButton(
+              icon: Icon(
+                Icons.circle,
+                color: currentColor,
+              ),
+              onPressed: () {
+                // FocusScope.of(context)
+                //         .requestFocus(FocusNode());
+                showDialog(
+                        context: context,
+                        builder: (context) => this.colorPicker(currentColor))
+                    .then((value) {
+                  setState(() {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                    if (value != null) currentColor = value;
+                  });
+                });
+              },
+            ),
+            helperText: '轻触右侧图标选择颜色'),
+        onEditingComplete: () =>
+            FocusScope.of(context).requestFocus(FocusNode()),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(), child: Text('取消')),
+        TextButton(
+            onPressed: () {
+              if (gruopEdit.text.isEmpty) {
+                Fluttertoast.showToast(msg: '请输入分组名');
+                return;
+              }
+              widget.group.name = gruopEdit.text;
+              widget.group.color = currentColor;
+              Navigator.of(context).pop();
+            },
+            child: Text('确定')),
+      ],
+    );
+  }
+}
+
 class GroupEdit extends StatefulWidget {
   const GroupEdit({Key? key}) : super(key: key);
 
@@ -172,7 +301,7 @@ class _GroupEditState extends State<GroupEdit> {
   Widget build(BuildContext context) {
     return AlertDialog(
       // scrollable: true,
-      title: Text('编辑分组'),
+      title: Text('编辑分组(排在首位将作为默认分组)'),
       content: Container(
         width: MediaQuery.of(context).size.width,
         height: 48.0 * groups.length > MediaQuery.of(context).size.height * 0.9
@@ -211,11 +340,23 @@ class _GroupEditState extends State<GroupEdit> {
                   },
                   key: Key(group.key.toString()),
                   child: ListTile(
-                    leading: Icon(Icons.circle, color: group.color),
-                    trailing: Icon(Icons.dehaze),
-                    title: Text(group.name, overflow: TextOverflow.ellipsis),
-                    dense: true,
-                  ));
+                      leading: Icon(Icons.circle, color: group.color),
+                      trailing: Icon(Icons.dehaze),
+                      title: Text(group.name, overflow: TextOverflow.ellipsis),
+                      dense: true,
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return GroupRename(
+                                group: group,
+                              );
+                            }).then(
+                          (value) {
+                            setState(() {});
+                          },
+                        );
+                      }));
             },
             itemCount: groups.length,
             onReorder: (oldIndex, newIndex) {
@@ -239,6 +380,7 @@ class _GroupEditState extends State<GroupEdit> {
             onPressed: () => Navigator.of(context).pop(), child: Text('取消')),
         TextButton(
             onPressed: () {
+              for (int i = 0; i < groups.length; i++) groups[i].key = i;
               Navigator.of(context).pop();
               taskData = copyList(groups);
               Navigator.of(context).pop();

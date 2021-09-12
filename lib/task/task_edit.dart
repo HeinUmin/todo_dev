@@ -171,6 +171,10 @@ class _TaskEditContainerState extends State<TaskEditContainer> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          for (int i = 0; i < tasks.length; i++) {
+            var temp = tasks[i].task;
+            for (int j = 0; j < temp.length; j++) temp[i].key = i;
+          }
           taskData = copyList(tasks);
           Navigator.of(context).pop();
         },

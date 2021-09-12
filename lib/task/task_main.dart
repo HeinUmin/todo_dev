@@ -108,7 +108,7 @@ class _TaskMainContainerState extends State<TaskMainContainer> {
                 showDialog(
                     context: context,
                     builder: (context) {
-                      return NewGruop();
+                      return NewGroup();
                     }).then((value) {
                   setState(() {});
                   // setState(() {
