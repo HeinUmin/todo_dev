@@ -173,7 +173,7 @@ class _TaskEditContainerState extends State<TaskEditContainer> {
         onPressed: () {
           for (int i = 0; i < tasks.length; i++) {
             var temp = tasks[i].task;
-            for (int j = 0; j < temp.length; j++) temp[j].key = i;
+            for (int j = 0; j < temp.length; j++) temp[j].key = j;
           }
           taskData = copyList(tasks);
           Navigator.of(context).pop();
