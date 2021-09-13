@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../res/data.dart';
-import 'task_new.dart';
+import 'task_detail.dart';
 
 class TaskSearch extends StatefulWidget {
   const TaskSearch({Key? key}) : super(key: key);
@@ -55,11 +55,14 @@ class _TaskSearchState extends State<TaskSearch> {
     bool has = false;
     for (int i = 0; i < taskData.length; i++) {
       var temp = taskData[i].task;
-      for (int j = 0; j < temp.length; j++)
+      for (int j = 0; j < temp.length; j++) {
+        temp[j].groupKey = i;
+        temp[j].key = j;
         if (temp[j].name.contains(str)) {
           searchResult.add(temp[j]);
           has = true;
         }
+      }
     }
     return has;
   }
@@ -113,8 +116,12 @@ class _TaskSearchState extends State<TaskSearch> {
                           onTap: () async {
                             FocusScope.of(context).requestFocus(FocusNode());
                             await Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => TaskNew()));
-                            setState(() {});
+                                builder: (context) => TaskDetail(
+                                    group: searchResult[index].groupKey!,
+                                    index: searchResult[index].key)));
+                            setState(() {
+                              search(_search.text);
+                            });
                           },
                           decoration: InputDecoration(
                               border: OutlineInputBorder(),

@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: [
-        const Locale('zh', 'CH'),
+        const Locale('zh', 'CN'),
         const Locale('en', 'US'),
       ],
       title: 'Flutter Demo',

@@ -7,6 +7,7 @@ import 'task_edit.dart';
 import 'task_search.dart';
 import '../res/data.dart';
 import '../res/group_edit.dart';
+import '../login/login_start.dart';
 
 class TaskMain extends StatelessWidget {
   @override
@@ -61,7 +62,10 @@ class _TaskMainContainerState extends State<TaskMainContainer> {
           IconButton(
             onPressed: () {
               Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => TaskSearch()));
+                  .push(MaterialPageRoute(builder: (context) => TaskSearch()))
+                  .then((value) {
+                setState(() {});
+              });
             },
             icon: Icon(Icons.search),
             color: Colors.blue,
@@ -84,10 +88,20 @@ class _TaskMainContainerState extends State<TaskMainContainer> {
               PopupMenuItem(
                 child: Text('添加新分组'),
                 value: 'add',
+              ),
+              PopupMenuItem(
+                child: Text('登录界面'),
+                value: 'login',
               )
             ],
             tooltip: '菜单',
             onSelected: (String value) {
+              if (value == 'login')
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => LoginStart()))
+                    .then((value) {
+                  setState(() {});
+                });
               if (value == 'edit')
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) => TaskEdit()))

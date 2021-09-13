@@ -128,6 +128,7 @@ class TaskViewModel {
   int key;
   bool? selected;
   Alarm alarm;
+  int? groupKey;
 }
 
 class GroupViewModel {
@@ -150,20 +151,19 @@ List<GroupViewModel> taskData = [
       key: 0,
       task: [
         TaskViewModel(
-            name: 'Task 1',
+            name: 'Task 1 @Group1',
             time: DateTime(2022, 1, 1, 0, 0, 0),
             key: 0,
             weight: 1),
         TaskViewModel(
-            name: 'Task 2 test long text with a long text',
+            name: 'Task 2 @Group1 长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试',
             time: DateTime(1979, 10, 20, 13, 18, 29),
             key: 1,
             weight: 2)
       ],
       color: Colors.blue),
   GroupViewModel(
-      name:
-          'Group 2 test long text with a long text and another long text and more and more and more and more and more',
+      name: 'Group2 长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试',
       key: 1,
       task: [
         TaskViewModel(
@@ -172,9 +172,7 @@ List<GroupViewModel> taskData = [
             key: 0,
             weight: 3),
         TaskViewModel(
-            name: 'Task 4 fdafjkdsflasgjaklsfdj as中文 dsaf sdgad as few dg',
-            time: DateTime(1979, 10, 20, 13, 18, 29),
-            key: 1)
+            name: 'Task 4 ', time: DateTime(1979, 10, 20, 13, 18, 29), key: 1)
       ],
       fold: true,
       color: Colors.green),
@@ -183,12 +181,12 @@ List<GroupViewModel> taskData = [
       key: 2,
       task: [
         TaskViewModel(
-            name: 'Task 2',
+            name: 'Task 1',
             time: DateTime(2022, 1, 1, 0, 0, 0),
             key: 1,
             weight: 2),
         TaskViewModel(
-            name: 'Task 1',
+            name: 'Task 2',
             time: DateTime(1979, 10, 20, 13, 18, 29),
             key: 2,
             weight: 3),
@@ -205,39 +203,39 @@ List<GroupViewModel> taskData = [
         TaskViewModel(
             name: 'Task 3', time: DateTime(2022, 1, 1, 0, 0, 0), key: 5),
         TaskViewModel(
-            name: 'Task 2', time: DateTime(2022, 1, 1, 0, 0, 0), key: 6),
+            name: 'Task 5', time: DateTime(2022, 1, 1, 0, 0, 0), key: 6),
         TaskViewModel(
-            name: 'Task 2', time: DateTime(2022, 1, 1, 0, 0, 0), key: 7),
+            name: 'Task 6', time: DateTime(2022, 1, 1, 0, 0, 0), key: 7),
         TaskViewModel(
-            name: 'Task 1', time: DateTime(2022, 1, 1, 0, 0, 0), key: 8),
+            name: 'Task 7', time: DateTime(2022, 1, 1, 0, 0, 0), key: 8),
         TaskViewModel(
-            name: 'Task 2',
+            name: 'Task 8',
             time: DateTime(2022, 1, 1, 0, 0, 0),
             key: 9,
             weight: 3),
         TaskViewModel(
-            name: 'Task 2', time: DateTime(2022, 1, 1, 0, 0, 0), key: 10),
+            name: 'Task 9', time: DateTime(2022, 1, 1, 0, 0, 0), key: 10),
         TaskViewModel(
-            name: 'Task 2', time: DateTime(2022, 1, 1, 0, 0, 0), key: 11),
+            name: 'Task 10', time: DateTime(2022, 1, 1, 0, 0, 0), key: 11),
         TaskViewModel(
-            name: 'Task 2', time: DateTime(2022, 1, 1, 0, 0, 0), key: 12),
+            name: 'Task 11', time: DateTime(2022, 1, 1, 0, 0, 0), key: 12),
         TaskViewModel(
-            name: 'Task 2', time: DateTime(2022, 1, 1, 0, 0, 0), key: 13),
+            name: 'Task 12', time: DateTime(2022, 1, 1, 0, 0, 0), key: 13),
         TaskViewModel(
-            name: 'Task 2', time: DateTime(2022, 1, 1, 0, 0, 0), key: 14),
+            name: 'Task 13', time: DateTime(2022, 1, 1, 0, 0, 0), key: 14),
         TaskViewModel(
-            name: 'Task 2', time: DateTime(2022, 1, 1, 0, 0, 0), key: 15),
+            name: 'Task 14', time: DateTime(2022, 1, 1, 0, 0, 0), key: 15),
         TaskViewModel(
-            name: 'Task 2',
+            name: 'Task 15',
             time: DateTime(2022, 1, 1, 0, 0, 0),
             key: 16,
             weight: 3),
         TaskViewModel(
-            name: 'Task 2', time: DateTime(2022, 1, 1, 0, 0, 0), key: 17),
+            name: 'Task 16', time: DateTime(2022, 1, 1, 0, 0, 0), key: 17),
       ],
       color: Colors.yellow),
   GroupViewModel(
-      name: 'Group 1',
+      name: 'Group 4',
       key: 3,
       task: [
         TaskViewModel(
@@ -246,14 +244,14 @@ List<GroupViewModel> taskData = [
             key: 0,
             weight: 1),
         TaskViewModel(
-            name: 'Task 2 test long text with a long text',
+            name: 'Task 2',
             time: DateTime(1979, 10, 20, 13, 18, 29),
             key: 1,
             weight: 2)
       ],
-      color: Colors.blue),
+      color: Colors.amber),
   GroupViewModel(
-      name: 'Group 1',
+      name: 'Group 5',
       key: 4,
       task: [
         TaskViewModel(
@@ -262,14 +260,14 @@ List<GroupViewModel> taskData = [
             key: 0,
             weight: 1),
         TaskViewModel(
-            name: 'Task 2 test long text with a long text',
+            name: 'Task 2',
             time: DateTime(1979, 10, 20, 13, 18, 29),
             key: 1,
             weight: 2)
       ],
       color: Colors.blue),
   GroupViewModel(
-      name: 'Group 1',
+      name: 'Group 4',
       key: 5,
       task: [
         TaskViewModel(
@@ -278,14 +276,14 @@ List<GroupViewModel> taskData = [
             key: 0,
             weight: 1),
         TaskViewModel(
-            name: 'Task 2 test long text with a long text',
+            name: 'Task 2',
             time: DateTime(1979, 10, 20, 13, 18, 29),
             key: 1,
             weight: 2)
       ],
-      color: Colors.blue),
+      color: Colors.redAccent),
   GroupViewModel(
-      name: 'Group 1',
+      name: 'Group 6',
       key: 6,
       task: [
         TaskViewModel(
@@ -294,14 +292,14 @@ List<GroupViewModel> taskData = [
             key: 0,
             weight: 1),
         TaskViewModel(
-            name: 'Task 2 test long text with a long text',
+            name: 'Task 2',
             time: DateTime(1979, 10, 20, 13, 18, 29),
             key: 1,
             weight: 2)
       ],
-      color: Colors.blue),
+      color: Colors.pink),
   GroupViewModel(
-      name: 'Group 1',
+      name: 'Group 7',
       key: 7,
       task: [
         TaskViewModel(
@@ -310,12 +308,12 @@ List<GroupViewModel> taskData = [
             key: 0,
             weight: 1),
         TaskViewModel(
-            name: 'Task 2 test long text with a long text',
+            name: 'Task 2',
             time: DateTime(1979, 10, 20, 13, 18, 29),
             key: 1,
             weight: 2)
       ],
-      color: Colors.blue),
+      color: Colors.purple),
   // GroupViewModel(
   //     name: 'Group 1',
   //     key: 8,
